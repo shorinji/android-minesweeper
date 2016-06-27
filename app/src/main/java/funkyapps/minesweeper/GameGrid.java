@@ -1,6 +1,9 @@
 package funkyapps.minesweeper;
 
+import android.graphics.Rect;
 import android.util.Log;
+
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -34,6 +37,35 @@ public class GameGrid {
     // 2d grid of tiles
     GameTile mGrid[][];
 
+    // Lookup table that given a TileImageType returns a frame in the source
+    // spritemap where to find the requested image
+    HashMap<GameGrid.TileImageType, Rect> mSrcTileRectangles;
+
+
+    /**
+     * Helper method that returns a rectangle corresponding to given x, y pair and a
+     * fixed tile size.
+     *
+     * @param leftIndex int number of tiles in from the left
+     * @param topIndex  int number of tiles in from the top
+     * @return
+     */
+    Rect makeSourceTileRect(int leftIndex, int topIndex) {
+        // somehow the source image is scaled so that
+        // 16x16 pixel squares end up 42x42 loaded here
+        final int SRC_TILE_SIZE = 42;
+
+        int left   = leftIndex * SRC_TILE_SIZE;
+        int top    = topIndex  * SRC_TILE_SIZE;
+        int right  = left + SRC_TILE_SIZE;
+        int bottom = top  + SRC_TILE_SIZE;
+
+//        Log.d(TAG, "[" + topIndex + "," + leftIndex + "]" +
+//                " gives coords: (" + left + "," + top + ") - (" + right + "," + bottom + ")" +
+//                " size: " + (right - left) + "x" + (bottom - top));
+
+        return new Rect(left, top, right, bottom);
+    }
 
 
     /**
@@ -51,6 +83,22 @@ public class GameGrid {
                 mGrid[y][x] = new GameTile();
             }
         }
+
+
+        // make a nice lookup table for the tiles we later need to reference
+        mSrcTileRectangles = new HashMap<>();
+        // Rect(left, top, right, bottom)
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_UNREVEALED, makeSourceTileRect(0, 0));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_MINE,       makeSourceTileRect(0, 3));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_8,    makeSourceTileRect(0, 7));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_7,    makeSourceTileRect(0, 8));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_6,    makeSourceTileRect(0, 9));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_5,    makeSourceTileRect(0, 10));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_4,    makeSourceTileRect(0, 11));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_3,    makeSourceTileRect(0, 12));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_2,    makeSourceTileRect(0, 13));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_COUNT_1,    makeSourceTileRect(0, 14));
+        mSrcTileRectangles.put(GameGrid.TileImageType.TILE_BLANK,      makeSourceTileRect(0, 15));
 
         randomize();
     }
@@ -171,7 +219,7 @@ public class GameGrid {
         GameTile tile = mGrid[y][x];
 
         if(!tile.isRevealed) {
-            return TileImageType.TILE_UNREVEALED;
+            //return TileImageType.TILE_UNREVEALED;
         }
 
         if (tile.isMine) {
@@ -191,5 +239,16 @@ public class GameGrid {
         }
     }
 
+    /**
+     * Returns a rectangle that can be used as a source frame to draw
+     * the corresponding image for the tile at the given position
+     * @param x int tile x-value
+     * @param y int tile y-value
+     * @return Rect source rectangle
+     */
+    public Rect getSourceRectangleForTile(int x, int y) {
+        TileImageType type = getTileImageType(x, y);
+        return mSrcTileRectangles.get(type);
+    }
 
 }

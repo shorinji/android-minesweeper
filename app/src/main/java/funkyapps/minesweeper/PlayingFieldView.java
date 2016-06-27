@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -22,6 +20,7 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
     final static String TAG = PlayingFieldView.class.getSimpleName();
 
 
+
     // number of pixels horizontally and vertically per tile
     final static int TILE_SIZE = 100;
 
@@ -33,6 +32,9 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
     // Number of tiles that will fit in one direction on screen
     // The smallest value is used for both axes to make a square playing field
     int mNumTiles = -1;
+
+    // single drawable image containing all various tile types
+    Bitmap mSpritemap;
 
     // our custom game board data structure
     GameGrid mGrid;
@@ -47,6 +49,8 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
         mHolder = getHolder();
         mHolder.addCallback(this);
+
+        mSpritemap = BitmapFactory.decodeResource(getResources(), R.drawable.spritemap);
     }
 
 
@@ -55,6 +59,43 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
         // creates a new random playing field
         mGrid = new GameGrid(mNumTiles);
+    }
+
+    /**
+     * Redraws the game field. Only called as needed
+     *
+     * @param holder SurfaceHolder
+     */
+    void redrawGameField(SurfaceHolder holder) {
+
+        if(mNumTiles < 0) {
+            return;
+        }
+
+        Canvas canvas = holder.lockCanvas();
+
+        // position to draw tile to
+        mDestRectangle.left = 0;
+        mDestRectangle.top = 0;
+        mDestRectangle.right = TILE_SIZE - 1;
+        mDestRectangle.bottom = TILE_SIZE - 1;
+
+        // loop over playing field
+        for(int y = 0 ; y < mNumTiles ; y++) {
+            for(int x = 0 ; x < mNumTiles ; x++) {
+
+                Rect srcRectangle = mGrid.getSourceRectangleForTile(x, y);
+                canvas.drawBitmap(mSpritemap, srcRectangle, mDestRectangle, null);
+
+                // move one step to the right
+                mDestRectangle.offset(TILE_SIZE, 0);
+            }
+            // move to start of next row
+            mDestRectangle.offsetTo(0, (y + 1) * TILE_SIZE);
+        }
+
+        // draw to screen
+        holder.unlockCanvasAndPost(canvas);
     }
 
 
@@ -80,14 +121,7 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
         Log.d(TAG, "surfaceChanged() new width = " + width + ", height = " + height);
 
-        Canvas c = holder.lockCanvas();
-
-        Rect r = new Rect(0, 0, width, height);
-        Paint p = new Paint();
-        p.setColor(Color.LTGRAY);
-        c.drawRect(r, p);
-
-        holder.unlockCanvasAndPost(c);
+        redrawGameField(holder);
     }
 
     @Override
