@@ -11,9 +11,8 @@ import android.view.ViewGroup;
  */
 public class MainActivity extends Activity {
 
+    // Used in logging
     final static String TAG = MainActivity.class.getSimpleName();
-
-    final String STATE_TEST_KEY = MainActivity.class.getCanonicalName() + ".testKey";
 
 
     /**
@@ -31,7 +30,6 @@ public class MainActivity extends Activity {
         ViewGroup rootView = (ViewGroup)findViewById(R.id.rootLayout);
 
         PlayingFieldView playingFieldView = new PlayingFieldView(this);
-
         rootView.addView(playingFieldView);
     }
 
@@ -42,9 +40,6 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Saving game state");
 
-        String testVal = "smurf";
-        outState.putString(STATE_TEST_KEY, testVal);
-        Log.d(TAG, "Saving [" + STATE_TEST_KEY + "] = '" + testVal + "'");
     }
 
     @Override
@@ -53,7 +48,5 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Restoring game state");
 
-        String testVal = savedInstanceState.getString(STATE_TEST_KEY);
-        Log.d(TAG, "Restoring [" + STATE_TEST_KEY + "] = '" + testVal + "'");
     }
 }
