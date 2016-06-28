@@ -61,6 +61,10 @@ E.g: if the screen is 2048x1024, the smaller of width and height is 1024. To get
 Hope this makes sense. The result is not very good looking, and is too rigid to be of use to a real game. Thus this is an obvious area of improvement for you!
 
 
+### What should happen on screen rotation?
+
+This is something for all Android apps to [bother with](https://developer.android.com/guide/topics/resources/runtime-changes.html). I save and restore data for the playing field so that we can continue displaying an identical grid configuration regardless of screen orientation. If the grid had been just any rectangle, we would need a different solution here. 
+
 
 ### What features make up the app and which order should they be implemented?
 

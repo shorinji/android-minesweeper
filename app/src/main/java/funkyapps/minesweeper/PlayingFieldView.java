@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -142,4 +143,26 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {}
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+
+            // convert from pixel position to tile index
+            int x = (int)Math.floor(event.getX() / TILE_SIZE);
+            int y = (int)Math.floor(event.getY() / TILE_SIZE);
+
+            handleClick(x, y);
+        }
+
+        return true;
+    }
+
+    public void handleClick(int x, int y) {
+
+        mGrid.revealTile(x, y);
+        redrawGameField(mHolder);
+    }
+
 }

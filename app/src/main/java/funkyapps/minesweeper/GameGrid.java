@@ -179,6 +179,16 @@ public class GameGrid implements Parcelable {
         return (x >= 0 && y >= 0 && x < mSize && y < mSize);
     }
 
+    protected void revealTile(int x, int y) {
+        if(!isValidXY(x, y)) {
+            return;
+        }
+
+        GameTile tile = mGrid[y][x];
+
+        tile.isRevealed = true;
+    }
+
     /**
      * Calculates number of neighboring mines to the given x,y pair
      * @param centerX int tile x-value
@@ -219,7 +229,7 @@ public class GameGrid implements Parcelable {
         GameTile tile = mGrid[y][x];
 
         if(!tile.isRevealed) {
-            //return TileImageType.TILE_UNREVEALED;
+            return TileImageType.TILE_UNREVEALED;
         }
 
         if (tile.isMine) {
