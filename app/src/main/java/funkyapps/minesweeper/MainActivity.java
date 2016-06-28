@@ -14,6 +14,8 @@ public class MainActivity extends Activity {
     // Used in logging
     final static String TAG = MainActivity.class.getSimpleName();
 
+    // Used to be able to save the game grid state
+    PlayingFieldView mPlayingFieldView;
 
     /**
      * Called when the Activity is created before it is first displayed.
@@ -29,24 +31,34 @@ public class MainActivity extends Activity {
 
         ViewGroup rootView = (ViewGroup)findViewById(R.id.rootLayout);
 
-        PlayingFieldView playingFieldView = new PlayingFieldView(this);
-        rootView.addView(playingFieldView);
+        mPlayingFieldView = new PlayingFieldView(this);
+        rootView.addView(mPlayingFieldView);
     }
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState()");
 
-        Log.d(TAG, "Saving game state");
+        GameGrid grid = mPlayingFieldView.getGrid();
 
+        String key = MainActivity.class.getCanonicalName() + ".grid";
+        Log.d(TAG, "Saving grid state to key " + key);
+
+        outState.putParcelable(key, grid);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState()");
 
-        Log.d(TAG, "Restoring game state");
+        String key = MainActivity.class.getCanonicalName() + ".grid";
 
+        GameGrid grid = savedInstanceState.getParcelable(key);
+        Log.d(TAG, "Loading grid state from key " + key);
+
+        mPlayingFieldView.setGrid(grid);
     }
 }

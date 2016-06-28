@@ -55,6 +55,8 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
 
     private void createNewPlayingField(int numTiles) {
+        Log.d(TAG, "createNewPlayingField(" + numTiles + ")");
+
         mNumTiles = numTiles;
 
         // creates a new random playing field
@@ -98,6 +100,17 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
         holder.unlockCanvasAndPost(canvas);
     }
 
+    public GameGrid getGrid() {
+        return mGrid;
+    }
+
+    public void setGrid(GameGrid grid) {
+        mGrid = grid;
+
+        if(mNumTiles > 0) {
+            redrawGameField(mHolder);
+        }
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -113,7 +126,10 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
             numTiles = (int)Math.floor(width / TILE_SIZE);
         }
 
-        createNewPlayingField(numTiles);
+        if (mGrid == null) {
+            createNewPlayingField(numTiles);
+        }
+        // else mGrid was restored from saved state
     }
 
     @Override
