@@ -62,7 +62,6 @@ Hope this makes sense. The result is not very good looking, and is too rigid to 
 
 
 
-
 ### What features make up the app and which order should they be implemented?
 
 ## Implementation steps
@@ -74,13 +73,16 @@ Hope this makes sense. The result is not very good looking, and is too rigid to 
 | step 2 | Base code to handle screen rotation	
 | step 3 | Data structures of the game
 | step 4 | Drawing tiles
-| step 5 | Interacting with the game		
-| step 6 | Game logic		
-| step 7 | menues and score keeping
-
+| step 5 | Keeping board state on screen rotation
+| step 6 | Interacting with the game
+| step 7 | Game logic
+| step 8 | score keeping
 
 
 Checking out the **master branch** will give you the finished game, but you can also checkout a tag corresponding to a certain development step.
 E.g: Tag '**step4**' gives the code with tile drawing just implemented, but not game interaction.
+
+
+
 
 		

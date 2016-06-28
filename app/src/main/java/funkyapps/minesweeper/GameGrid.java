@@ -1,6 +1,8 @@
 package funkyapps.minesweeper;
 
 import android.graphics.Rect;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Random;
  * Structure representing the grid formed data used by the game,
  * including tile image calculations and mine randomization
  */
-public class GameGrid {
+public class GameGrid implements Parcelable {
 
     // constants representing each type of tile image
     public enum TileImageType {
@@ -247,6 +249,46 @@ public class GameGrid {
     public Rect getSourceRectangleForTile(int x, int y) {
         TileImageType type = getTileImageType(x, y);
         return mSrcTileRectangles.get(type);
+    }
+
+
+    /*
+     * Ahead is implementation of Parcelable (generated code).
+     * This make the class writable to disk, which is used during screen rotations
+     */
+    protected GameGrid(Parcel in) {
+        mSize = in.readInt();
+        mGrid = new GameTile[mSize][mSize];
+
+        for(int i = 0 ; i < mSize ; i++) {
+            in.readParcelableArray(mGrid[i].getClass().getClassLoader());
+        }
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mSize);
+        for(GameTile[] tileRow : mGrid) {
+            dest.writeParcelableArray(tileRow, 0);
+        }
+    }
+
+
+    public static final Creator<GameGrid> CREATOR = new Creator<GameGrid>() {
+        @Override
+        public GameGrid createFromParcel(Parcel in) {
+            return new GameGrid(in);
+        }
+
+        @Override
+        public GameGrid[] newArray(int size) {
+            return new GameGrid[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
 }
