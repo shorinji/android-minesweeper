@@ -51,9 +51,7 @@ public class GameGrid {
      * @return
      */
     Rect makeSourceTileRect(int leftIndex, int topIndex) {
-        // somehow the source image is scaled so that
-        // 16x16 pixel squares end up 42x42 loaded here
-        final int SRC_TILE_SIZE = 42;
+        final int SRC_TILE_SIZE = 16;
 
         int left   = leftIndex * SRC_TILE_SIZE;
         int top    = topIndex  * SRC_TILE_SIZE;
