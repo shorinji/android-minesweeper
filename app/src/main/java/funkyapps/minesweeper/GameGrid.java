@@ -136,7 +136,9 @@ public class GameGrid implements Parcelable {
         }
 
 
+
         // DEBUG PRINT PLAYING FIELD - remove in final version if you don't like to cheat
+        /*
         StringBuilder sb = new StringBuilder();
         Log.d(TAG, "Game grid:");
         for(int y = 0 ; y < mSize ; y++) {
@@ -146,6 +148,7 @@ public class GameGrid implements Parcelable {
             Log.d(TAG, "[" + sb.toString() + "]");
             sb = new StringBuilder();
         }
+        */
     }
 
 
@@ -179,15 +182,43 @@ public class GameGrid implements Parcelable {
         return (x >= 0 && y >= 0 && x < mSize && y < mSize);
     }
 
-    protected void revealTile(int x, int y) {
+    protected boolean revealTile(int x, int y) {
         if(!isValidXY(x, y)) {
-            return;
+            return false;
         }
 
         GameTile tile = mGrid[y][x];
+        if(tile.isRevealed) {
+            return false;
+        }
 
         tile.isRevealed = true;
+
+        if(!tile.isMine && tile.count == 0) {
+            revealTile(x - 1,  y);
+            revealTile(x + 1,  y);
+            revealTile(x,  y - 1);
+            revealTile(x,  y + 1);
+        }
+
+        return tile.isMine;
     }
+
+    /*
+     * Used at game over to reveal the location of all remaining mines
+     */
+    public void revealMines() {
+        for(int y = 0 ; y < mSize ; y++) {
+            for(int x = 0 ; x < mSize ; x++) {
+                if(isMine(x, y)) {
+                    mGrid[y][x].isRevealed = true;
+                }
+            }
+        }
+    }
+
+
+
 
     /**
      * Calculates number of neighboring mines to the given x,y pair

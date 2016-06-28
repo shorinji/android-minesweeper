@@ -45,8 +45,11 @@ public class MainActivity extends Activity {
 
         String key = MainActivity.class.getCanonicalName() + ".grid";
         Log.d(TAG, "Saving grid state to key " + key);
-
         outState.putParcelable(key, grid);
+
+        key = MainActivity.class.getCanonicalName() + ".state";
+        outState.putSerializable(key, mPlayingFieldView.getState());
+
     }
 
     @Override
@@ -55,10 +58,12 @@ public class MainActivity extends Activity {
         Log.d(TAG, "onRestoreInstanceState()");
 
         String key = MainActivity.class.getCanonicalName() + ".grid";
-
         GameGrid grid = savedInstanceState.getParcelable(key);
-        Log.d(TAG, "Loading grid state from key " + key);
-
         mPlayingFieldView.setGrid(grid);
+
+        key = MainActivity.class.getCanonicalName() + ".state";
+        PlayingFieldView.PlayingState state =
+                (PlayingFieldView.PlayingState) savedInstanceState.getSerializable(key);
+        mPlayingFieldView.setState(state);
     }
 }

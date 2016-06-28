@@ -4,7 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -20,7 +23,10 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
     final static String TAG = PlayingFieldView.class.getSimpleName();
 
-
+    public enum PlayingState {
+        PLAYING,
+        GAME_OVER
+    }
 
     // number of pixels horizontally and vertically per tile
     final static int TILE_SIZE = 100;
@@ -28,6 +34,8 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
     // Gives additional control over drawing
     SurfaceHolder mHolder;
+
+    PlayingState mState;
 
 
     // Number of tiles that will fit in one direction on screen
@@ -55,13 +63,21 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-    private void createNewPlayingField(int numTiles) {
-        Log.d(TAG, "createNewPlayingField(" + numTiles + ")");
+    public PlayingState getState() {
+        return mState;
+    }
 
-        mNumTiles = numTiles;
+    public void setState(PlayingState state) {
+        mState = state;
+    }
+
+
+    private void createNewPlayingField() {
+        Log.d(TAG, "createNewPlayingField()");
 
         // creates a new random playing field
         mGrid = new GameGrid(mNumTiles);
+        mState = PlayingState.PLAYING;
     }
 
     /**
@@ -70,8 +86,15 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
      * @param holder SurfaceHolder
      */
     void redrawGameField(SurfaceHolder holder) {
+        mHolder = holder;
+        Log.d(TAG, "redrawGameField() state = " + mState);
 
         if(mNumTiles < 0) {
+            return;
+        }
+
+        if (mState == PlayingState.GAME_OVER) {
+            printGameOver();
             return;
         }
 
@@ -120,22 +143,20 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
         int width = frame.width();
         int height = frame.height();
 
-        int numTiles;
         if (width > height) { // landscape
-            numTiles = (int)Math.floor(height / TILE_SIZE);
+            mNumTiles = (int)Math.floor(height / TILE_SIZE);
         } else { // portrait
-            numTiles = (int)Math.floor(width / TILE_SIZE);
+            mNumTiles = (int)Math.floor(width / TILE_SIZE);
         }
 
         if (mGrid == null) {
-            createNewPlayingField(numTiles);
+            createNewPlayingField();
         }
         // else mGrid was restored from saved state
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
         Log.d(TAG, "surfaceChanged() new width = " + width + ", height = " + height);
 
         redrawGameField(holder);
@@ -147,22 +168,49 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+        if(event.getAction() != MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+        //Log.d(TAG, "onTouchEvent(DOWN) state = " + mState);
+
+        if(mState == PlayingState.GAME_OVER) {
+            // start over
+            createNewPlayingField();
+
+        } else { // mState == PLAYING
 
             // convert from pixel position to tile index
-            int x = (int)Math.floor(event.getX() / TILE_SIZE);
-            int y = (int)Math.floor(event.getY() / TILE_SIZE);
+            int x = (int) Math.floor(event.getX() / TILE_SIZE);
+            int y = (int) Math.floor(event.getY() / TILE_SIZE);
 
             handleClick(x, y);
         }
 
+        redrawGameField(mHolder);
+
         return true;
+    }
+
+    // quick and dirty game over screen
+    private void printGameOver() {
+        Canvas c = getHolder().lockCanvas();
+
+        Paint p = new Paint();
+        p.setAntiAlias(true);
+        p.setColor(Color.RED);
+        p.setTextSize(TILE_SIZE);
+        c.drawText("GAME OVER", TILE_SIZE, (mNumTiles / 2) * TILE_SIZE, p);
+
+        getHolder().unlockCanvasAndPost(c);
     }
 
     public void handleClick(int x, int y) {
 
-        mGrid.revealTile(x, y);
-        redrawGameField(mHolder);
+        boolean wasMine = mGrid.revealTile(x, y);
+
+        if(wasMine) {
+            mState = PlayingState.GAME_OVER;
+        }
     }
 
 }
