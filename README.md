@@ -70,14 +70,13 @@ Hope this makes sense. The result is not very good looking, and is too rigid to 
 | Step   | Outcome
 | ------ | ---------------------------------------
 | step 0 | New project
-| step 1 | Basic structure and screen layout (Inklusive rendering)
+| step 1 | Basic structure and screen layout
 | step 2 | Base code to handle screen rotation	
-| step 3 | Data structures of the game	 förklara gridstruktur
-| step 4 | Drawing tiles	 	förklara en spritemap
+| step 3 | Data structures of the game
+| step 4 | Drawing tiles
 | step 5 | Interacting with the game		
 | step 6 | Game logic		
 | step 7 | menues and score keeping
-
 
 
 
