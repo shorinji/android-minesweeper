@@ -20,7 +20,7 @@ To follow along you need:
 
 ## My planning
 
-I have been told planning should make up 80% of the project time to get it right. That number might be high for a small project, but it is always a good idea before coding to break down the work, and think through uncertain areas. Below, I have listed some of the questions that arose for me, and how I resolved them.
+I have been told planning should make up 80% of the project time to get it right. That number might be high for a small project, but it is always a good idea before coding to break down the work, and think through uncertain areas. Below, I have listed some of the questions that arose for me, and how I resolved them. It goes without saying that I know something about programming Android apps.
 
 
 ### Know the rules of the game
@@ -72,20 +72,18 @@ This is something for all Android apps to [bother with](https://developer.androi
 
 | Step   | Outcome
 | ------ | ---------------------------------------
-| step 0 | New project
-| step 1 | Basic structure and screen layout
-| step 2 | Base code to handle screen rotation	
-| step 3 | Data structures of the game
-| step 4 | Drawing tiles
-| step 5 | Keeping board state on screen rotation
-| step 6 | Interacting with the game
-| step 7 | Game logic
-| step 8 | score keeping
+| step 0 | [New project](step0.md)
+| step 1 | [Basic structure and screen layout](step1.md)
+| step 2 | [Base code to handle screen rotation](step2.md)
+| step 3 | [Data structures of the game](step3.md)
+| step 4 | [Drawing tiles](step4.md)
+| step 5 | [Keeping board state on screen rotation](step5.md)
+| step 6 | [Interacting with the game](step6.md)
+| step 7 | [Game logic](step7.md)
+| step 8 | [Score keeping](step8.md)
 
 
-Checking out the **master branch** will give you the finished game, but you can also checkout a tag corresponding to a certain development step.
-E.g: Tag '**step4**' gives the code with tile drawing just implemented, but not game interaction.
-
+From here you can click on a step above to get a description of that code. You can also checkout the a git tag corresponding to the step (e.g. step 4 has tag step4) to see the resulting code after the step has been implemented. By examining indvidual commits you can see how the app has evolved.
 
 
 

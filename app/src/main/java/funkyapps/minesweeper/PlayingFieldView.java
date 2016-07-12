@@ -25,6 +25,7 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
 
     public enum PlayingState {
         PLAYING,
+        WON,
         GAME_OVER
     }
 
@@ -86,8 +87,10 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
      * @param holder SurfaceHolder
      */
     void redrawGameField(SurfaceHolder holder) {
-        mHolder = holder;
-        Log.d(TAG, "redrawGameField() state = " + mState);
+        //mHolder = holder;
+        if(mState != PlayingState.PLAYING) {
+            Log.d(TAG, "redrawGameField() state = " + mState);
+        }
 
         if(mNumTiles < 0) {
             return;
@@ -96,7 +99,12 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
         if (mState == PlayingState.GAME_OVER) {
             printGameOver();
             return;
+        } else if (mState == PlayingState.WON) {
+            printWin();
+            return;
         }
+
+
 
         Canvas canvas = holder.lockCanvas();
 
@@ -204,13 +212,21 @@ public class PlayingFieldView extends SurfaceView implements SurfaceHolder.Callb
         getHolder().unlockCanvasAndPost(c);
     }
 
+    // quick and dirty win screen
+    private void printWin() {
+        Canvas c = getHolder().lockCanvas();
+
+        Paint p = new Paint();
+        p.setAntiAlias(true);
+        p.setColor(Color.GREEN);
+        p.setTextSize(TILE_SIZE);
+        c.drawText("YOU WIN!", TILE_SIZE, (mNumTiles / 2) * TILE_SIZE, p);
+
+        getHolder().unlockCanvasAndPost(c);
+    }
+
     public void handleClick(int x, int y) {
-
-        boolean wasMine = mGrid.revealTile(x, y);
-
-        if(wasMine) {
-            mState = PlayingState.GAME_OVER;
-        }
+        mState = mGrid.revealTile(x, y);
     }
 
 }

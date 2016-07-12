@@ -138,7 +138,7 @@ public class GameGrid implements Parcelable {
 
 
         // DEBUG PRINT PLAYING FIELD - remove in final version if you don't like to cheat
-        /*
+
         StringBuilder sb = new StringBuilder();
         Log.d(TAG, "Game grid:");
         for(int y = 0 ; y < mSize ; y++) {
@@ -148,7 +148,7 @@ public class GameGrid implements Parcelable {
             Log.d(TAG, "[" + sb.toString() + "]");
             sb = new StringBuilder();
         }
-        */
+
     }
 
 
@@ -182,28 +182,58 @@ public class GameGrid implements Parcelable {
         return (x >= 0 && y >= 0 && x < mSize && y < mSize);
     }
 
-    protected boolean revealTile(int x, int y) {
+    /**
+     * Reveal the given tile and return the new game state
+     * @param x int tile x-value
+     * @param y int tile x-value
+     * @return PlayingFieldView.PlayingState The new state
+     */
+    protected PlayingFieldView.PlayingState revealTile(int x, int y) {
+        PlayingFieldView.PlayingState defaultNewState = PlayingFieldView.PlayingState.PLAYING;
+
         if(!isValidXY(x, y)) {
-            return false;
+            return defaultNewState;
         }
 
         GameTile tile = mGrid[y][x];
         if(tile.isRevealed) {
-            return false;
+            return defaultNewState;
         }
 
         tile.isRevealed = true;
 
-        if(!tile.isMine && tile.count == 0) {
+        if(tile.isMine) {
+            return PlayingFieldView.PlayingState.GAME_OVER;
+        }
+
+        if(tile.count == 0) {
             revealTile(x - 1,  y);
             revealTile(x + 1,  y);
             revealTile(x,  y - 1);
             revealTile(x,  y + 1);
         }
 
-        return tile.isMine;
+        if(anySafeTilesLeft()) {
+            return defaultNewState;
+        }
+
+        return PlayingFieldView.PlayingState.WON;
     }
 
+    private boolean anySafeTilesLeft() {
+
+        for (int y = 0; y < mSize; y++) {
+            for (int x = 0; x < mSize; x++) {
+                if(!mGrid[y][x].isRevealed && !mGrid[y][x].isMine) {
+                    Log.d(TAG, "found remaining tile at (" + x + ", " + y + ")");
+                    return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
     /*
      * Used at game over to reveal the location of all remaining mines
      */
